@@ -1,0 +1,37 @@
+---
+
+- hosts: all
+  become: true
+  tasks:
+  - name: install apache2, support php and update packages
+    apt:
+      name:
+        - apache2
+        - libapache2-mod-php
+      update_cache: yes
+      state: latest
+
+- hosts: all
+  become: true
+  tasks:
+  - name: create simone user
+    tags: always
+    user:
+      name: simone
+      group: root
+
+  - name: ssh key added for simone
+    tags: always
+    authorized_key:
+      user: simone
+      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJveB20tcmyUjZXQ9XqVqL2r5Gk7WFsO/ZMU1T3dVLDm ansible"
+  
+  - name: add sudoers file for simone 
+    tags: always
+    copy:
+      src: sudoers_simone
+      dest: /etc/sudoers.d/simone
+      owner: root
+      group: root
+      mode: 0440
+
